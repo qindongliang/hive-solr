@@ -123,9 +123,16 @@ select * from index_solr limit 10 ;
 当然，作为开源独立的框架，我们可以进行各种组合， hive也可以和elasticsearch进行集成，也可以跟mongodb集成，
 solr也可以跟spark集成，也可以跟pig集成,但都需要我们自定义相关的组件才行,思路大致与这个项目的思路一致。
 
+###（七）本次测试通过的基础环境
+Apache Hadoop2.7.1<br/>
+Apache Hive1.2.1<br/>
+Apache Solr5.1.0<br/>
 
-###参考资料：
+###（八）感谢并参考的资料：
+https://github.com/mongodb/mongo-hadoop/tree/master/hive/src/main/java/com/mongodb/hadoop/hive<br/>
+https://github.com/lucidworks/hive-solr<br/>
+https://github.com/chimpler/hive-solr<br/>
+https://cwiki.apache.org/confluence/display/Hive/DeveloperGuide#DeveloperGuide-HowtoWriteYourOwnSerDe
 
-
-
+###（九）  公众号：我是攻城师（woshigcs） 如有问题，可在后台留言咨询
 
