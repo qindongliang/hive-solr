@@ -35,7 +35,7 @@ Row object --> Serializer --> <key, value> --> OutputFileFormat --> HDFS files /
 （2）生成solr索引，一句SQL，就能通过MR的方式给大规模数据构建索引<br/>
 
 ###（五）如何安装部署以及使用？
-非常简单，使用git clone [hive-solr这个项目](https://github.com/qindongliang/hive-solr)后，修改少许pom文件后，执行<br/>
+非常简单，使用git clone https://github.com/qindongliang/hive-solr 后，修改少许pom文件后，执行<br/>
 mvn clean package <br/>
 命令构建生成jar包，并将此jar包拷贝至hive的lib目录即可<br/>
 
