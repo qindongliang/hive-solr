@@ -76,7 +76,7 @@ select sname ,count(*) as c from solr group by sname  order by c desc
 
 ````
 
-（2）使用hive给solr构建索引的例子
+（2）使用hive+单机solr例子
 
 首先构建数据源表:
 ````sql
@@ -107,7 +107,8 @@ create external table index_solr (
 tblproperties('solr.url' = 'http://192.168.1.28:8983/solr/b',
                     'solr.query' = '*:*',
                     'solr.cursor.batch.size'='10000',
-                    'solr.primary_key'='id'
+                    'solr.primary_key'='id',
+                    'is.solrcloud'='0'
                        );
 ````
 最后，执行下面的sql命令，即可给数据源中的数据，构建solr索引：<br/>
@@ -119,6 +120,65 @@ INSERT OVERWRITE TABLE index_solr SELECT * FROM  index_source ;
 --执行成功之后，即可在solr的终端界面查看，也可以再hive里面执行下面的solr查询
 select * from index_solr limit 10 ;
 ````
+（3）使用hive+solrcloud集群例子
+首先构建数据源表和（2）中步骤一样
+
+创建关联表：
+````sql
+-- 加上这个比较保险，否则数据量大的时候，在其他机器是没办法获取这个jar，而抛出空指针的
+add jar /ROOT/server/hive/hive-solr.jar; 
+--存在表就删除
+drop table  if exists solr;
+
+--创建一个外部表
+create external table solr (
+  --定义字段，这里面的字段需要与solr的字段一致
+  rowkey string,
+  title string ,
+  content string ,
+  dtime string ,
+  t1 string ,
+  t2 string ,
+  t3 string 
+
+)  
+--定义存储的storehandler
+stored by "com.easy.hive.store.SolrStorageHandler"
+--配置solr属性
+tblproperties('solr.url' = '192.168.1.187:2181,192.168.1.184:2181,192.168.1.186:2181/cloudsolr',
+                    'solr.query' = '*:*',
+                    'solr.cursor.batch.size'='300000',
+                    'solr.primary_key'='rowkey' ,
+                    'is.solrcloud'='1',
+                     'collection.name'='big_search'
+                       );
+````
+
+最后执行语句，对源表进行大规模构建索引：
+````sql
+-- 关闭推测执行
+set mapreduce.map.speculative=false;
+set mapreduce.reduce.speculative=false;
+--set mapreduce.job.running.map.limit=1;
+--注册hive-solr的jar包，否则MR方式运行的时候，将不能正常启动  
+add jar /ROOT/server/hive/hive-solr.jar;  
+--执行插入命令  
+INSERT OVERWRITE TABLE solr SELECT * FROM  index_source ;   
+--执行成功之后，即可在solr的终端界面查看，也可以再hive里面执行下面的solr查询
+````
+构建完毕后，就可以在hive里面查询solr的数据了，当然，如果不是join，或者使用sql分析一些solr办不到的操作时，不建议直接在
+hive中查询solr，因为效率没有直接在solr中查询的高
+````sql
+-- 添加依赖的jar
+add jar /ROOT/server/hive/hive-solr.jar;  
+--执行sql统计，执行跑一个mr作业
+select count(*) from solr;
+
+````
+
+
+
+
 ###（六）他们还能其他的框架集成么？
 当然，作为开源独立的框架，我们可以进行各种组合， hive也可以和elasticsearch进行集成，也可以跟mongodb集成，
 solr也可以跟spark集成，也可以跟pig集成,但都需要我们自定义相关的组件才行,思路大致与这个项目的思路一致。
