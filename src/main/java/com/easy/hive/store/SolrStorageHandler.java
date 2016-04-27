@@ -56,9 +56,19 @@ public class SolrStorageHandler extends DefaultStorageHandler {
     @Override
     public void configureOutputJobProperties(TableDesc tbl, Map<String, String> jobProperties) {
         final Properties properties = tbl.getProperties();
+
         //设置属性到运行时的jobconf里面
         Conf.copyProperties(properties,jobProperties);
+
     }
+
+    public void printMapInfo(Map<String,String> map){
+        for(Map.Entry<String,String> kv:map.entrySet()){
+            log.info(" 表meta： key:{}  ==>  value:{} ",kv.getKey(),kv.getValue());
+        }
+    }
+
+
 
 
 }

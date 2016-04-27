@@ -2,6 +2,10 @@ package com.easy.hive.conf;
 
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 import java.util.Map;
 import java.util.Properties;
@@ -14,6 +18,12 @@ public  class Conf {
 
     //Solr的url地址
     public static final String SOLR_URL="solr.url";
+
+    //是否为solrcloud模式，0为普通模式，1为solrcloud模式
+    public static final String IS_SOLRCLOUD="is.solrcloud";
+
+    //solrcloud模式下，设置集合名
+    public static final String COLLECTION_NAME="collection.name";
 
     //表所在位置
     public static final String LOCATION_TABLE="location";
@@ -78,11 +88,6 @@ public  class Conf {
         return  cols.split(COLUMNS_DELIMITER);
 
     }
-
-
-
-
-
 
 
     }

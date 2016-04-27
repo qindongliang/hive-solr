@@ -10,8 +10,13 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.mapred.*;
 import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.LBHttpSolrClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -20,16 +25,24 @@ import java.io.IOException;
  * Created by qindongliang on 2016/3/14.
  */
 public class SolrHiveInputFormat extends HiveInputFormat<LongWritable,MapWritable> {
-
+    final static Logger log= LoggerFactory.getLogger(SolrHiveInputFormat.class);
     //使用下面这个默认的httpclient，避免与hive或者hadoop的加载的httpclient包版本不一致冲突
     SystemDefaultHttpClient httpClient = new SystemDefaultHttpClient();
-    HttpSolrClient sc =null;
-
+    SolrClient sc =null;
+    LBHttpSolrClient lbHttpSolrClient=new LBHttpSolrClient(httpClient);
     @Override
     public InputSplit[] getSplits(JobConf conf, int numSplits) throws IOException {
         FileSplit[] wrappers=null;
-        //初始化HttpSolrClient
-        sc=new HttpSolrClient(conf.get(Conf.SOLR_URL),httpClient);
+        //初始化solrclient// 必须在这里初始化，否则，提取到一个公用类里面初始化会报错，因为MR的进程JVM和客户端的类是独立的
+        if(conf.get(Conf.IS_SOLRCLOUD).equals("1")) {
+            //solrcloud模式
+            sc=new CloudSolrClient(conf.get(Conf.SOLR_URL).trim(),lbHttpSolrClient);//设置Cloud的client
+            ((CloudSolrClient)sc).setDefaultCollection(conf.get(Conf.COLLECTION_NAME));//设置集合名
+//            ((CloudSolrClient)sc).setParallelUpdates(false);
+        }else{
+            //普通模式
+            sc = new HttpSolrClient(conf.get(Conf.SOLR_URL),httpClient);
+        }
         try {
             SolrQuery sq = new SolrQuery();
             sq.set("q", conf.get(Conf.SOLR_QUERY));
@@ -54,11 +67,19 @@ public class SolrHiveInputFormat extends HiveInputFormat<LongWritable,MapWritabl
     }
 
 
-
     @Override
-    public RecordReader getRecordReader(InputSplit split, JobConf job, Reporter reporter) throws IOException {
-        sc=new HttpSolrClient(job.get(Conf.SOLR_URL),httpClient);
+    public RecordReader getRecordReader(InputSplit split, JobConf conf, Reporter reporter) throws IOException {
+        //初始化solrclient// 必须在这里初始化，否则，提取到一个公用类里面初始化会报错，因为MR的进程JVM和客户端的类是独立的
+        if(conf.get(Conf.IS_SOLRCLOUD).equals("1")) {
+            //solrcloud模式
+            sc=new CloudSolrClient(conf.get(Conf.SOLR_URL).trim(),httpClient);//设置Cloud的client
+            ((CloudSolrClient)sc).setDefaultCollection(conf.get(Conf.COLLECTION_NAME));//设置集合名
+//            ((CloudSolrClient)sc).setParallelUpdates(false);
+        }else{
+            //普通模式
+            sc = new HttpSolrClient(conf.get(Conf.SOLR_URL),httpClient);
+        }
         //第三个参数是游标的初始化查询参数
-        return new SolrReader(sc,new SolrQuery(),"*",job);
+        return new SolrReader(sc,new SolrQuery(),"*",conf);
     }
 }

@@ -127,7 +127,6 @@ public class SolrSerde implements SerDe {
 
     @Override
     public Object deserialize(Writable writable) throws SerDeException {
-
         final MapWritable input = (MapWritable) writable;
         final Text t = new Text();
         row.clear();
