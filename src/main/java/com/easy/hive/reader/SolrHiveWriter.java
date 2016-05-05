@@ -24,15 +24,15 @@ import java.util.Map;
  * Created by qindongliang on 2016/3/15.
  */
 public class SolrHiveWriter implements FileSinkOperator.RecordWriter {
+    final static Logger log= LoggerFactory.getLogger(SolrHiveWriter.class);
     SolrClient sc =null;
     int batchSize;
     SystemDefaultHttpClient httpClient = new SystemDefaultHttpClient();
     //批量插入
     List<SolrInputDocument> datas=new ArrayList<SolrInputDocument>();
 
-    LBHttpSolrClient lbHttpSolrClient=new LBHttpSolrClient(httpClient);
-
 //    AtomicInteger count=new AtomicInteger();
+    LBHttpSolrClient lbHttpSolrClient=new LBHttpSolrClient(httpClient);
 
     public SolrHiveWriter(JobConf conf){
 
@@ -50,15 +50,17 @@ public class SolrHiveWriter implements FileSinkOperator.RecordWriter {
         log.info("批处理提交数量：{}",batchSize);
     }
 
-    final static Logger log= LoggerFactory.getLogger(SolrHiveWriter.class);
-
     @Override
     public void write(Writable w) throws IOException {
         MapWritable map = (MapWritable) w;
         SolrInputDocument doc = new SolrInputDocument();
         for (final Map.Entry<Writable, Writable> entry : map.entrySet()) {
-            String key = entry.getKey().toString();
-            doc.setField(key, entry.getValue().toString());
+            String key = entry.getKey().toString();//得到key
+            String value=entry.getValue().toString().trim();// null值会转成空字符串 得到value
+            //只有value有值的数据，我们才推送到solr里面，无值数据，不再发送到solr里面
+            if(value.length()>0){
+            doc.setField(key,value);
+            }
         }
 
 //        count.incrementAndGet();

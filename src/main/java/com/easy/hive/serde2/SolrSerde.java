@@ -30,14 +30,13 @@ import java.util.Properties;
  */
 public class SolrSerde implements SerDe {
 
+    final static Logger log= LoggerFactory.getLogger(SolrSerde.class);
+    private final MapWritable mapWritable = new MapWritable();
     // params
     private List<String> columnNames = null;
     private List<TypeInfo> columnTypes = null;
     private ObjectInspector objectInspector = null;
-
     private List<Object> row;
-
-    final static Logger log= LoggerFactory.getLogger(SolrSerde.class);
 
     @Override
     public void initialize(@Nullable Configuration configuration, Properties tbl) throws SerDeException {
@@ -84,8 +83,6 @@ public class SolrSerde implements SerDe {
 
     }
 
-    private final MapWritable mapWritable = new MapWritable();
-
     @Override
     public Class<? extends Writable> getSerializedClass() {
         return MapWritable.class;
@@ -104,7 +101,7 @@ public class SolrSerde implements SerDe {
                     case PRIMITIVE:
                         Object value = ObjectInspectorUtils.copyToStandardJavaObject(inspector.getStructFieldData(o, f),
                                         f.getFieldObjectInspector());
-                        mapWritable.put(new Text(docFieldName),new Text(value.toString()));
+                        mapWritable.put(new Text(docFieldName),new Text(value==null?"":value.toString()));
                         break;
 
                     case STRUCT:
