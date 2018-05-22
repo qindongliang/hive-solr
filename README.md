@@ -197,5 +197,13 @@ https://github.com/lucidworks/hive-solr<br/>
 https://github.com/chimpler/hive-solr<br/>
 https://cwiki.apache.org/confluence/display/Hive/DeveloperGuide#DeveloperGuide-HowtoWriteYourOwnSerDe
 
-###（九）  公众号：我是攻城师（woshigcs） 如有问题，可在后台留言咨询
+## 个人博客
+
+<http://8090nixi.com/>
+
+## 我的公众号(woshigcs)
+
+有问题可关注我的公众号留言咨询
+
+![image](https://github.com/qindongliang/answer_sheet_scan/blob/master/imgs/gcs.jpg)
 
