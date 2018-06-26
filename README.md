@@ -2,11 +2,11 @@
 使用Hive读写solr
 
 
-###（一）Hive+Solr简介
+### （一）Hive+Solr简介
 Hive作为Hadoop生态系统里面离线的数据仓库，可以非常方便的使用SQL的方式来离线分析海量的历史数据，并根据分析的结果，来干一些其他的事情，如报表统计查询等。
 <br/>Solr作为高性能的搜索服务器，能够提供快速，强大的全文检索功能。
 
-###（二）为什么需要hive集成solr？
+### （二）为什么需要hive集成solr？
 （1）简单： 如果单纯的使用Hadoop编程或者Spark编程来构建索引，当然也是可以的，只不过比较复杂而已，而且容易出错，如果我们把编程通过抽象，封装，简化到SQL中，那么整个流程就会变得非常简单，通过借助强大的Hive来驾驭hadoop或spark，是非常方便的。<br/>
 （2）优劣互补：有时候，我们需要将hive的分析完的结果或者直接对hive源表，存储到solr里面进行全文检索服务，比如以前我们有个业务，对我们电商网站的搜索日志使用hive分析完后
 存储到solr里面做报表查询，因为里面涉及到搜索关键词，这个字段是需要能分词查询和不分词查询的，通过分词查询可以查看改词的相关的产品在某一段时间内的一个走势图。
@@ -15,7 +15,7 @@ Hive作为Hadoop生态系统里面离线的数据仓库，可以非常方便的�
 （4）与时俱进：支持新版本hive，hadoop，solrcloud使用，网上已经有一些hive集成solr的开源项目，但由于
 版本比较旧，所以无法在新的版本里面运行，经过散仙改造修补后的可以运行在最新的版本。<br/>
 
-###（三）如何才能使hive集成solr？
+### （三）如何才能使hive集成solr？
 所谓的集成，其实就是重写hadoop的MR编程接口的一些组件而已。我们都知道MR的编程接口非常灵活，而且高度抽象，MR不仅仅可以从HDFS上加载
 数据源，也可以从任何非HDFS的系统中加载数据，当然前提是我们需要自定义：
 <br/>InputFormat<br/>
@@ -33,11 +33,11 @@ HDFS files / every source ->  InputFileFormat --> <key, value> --> Deserializer 
 写的流程：<br/>
 Row object --> Serializer --> <key, value> --> OutputFileFormat --> HDFS files / every source<br/>
 
-###（四）hive集成solr后能干什么？
+### （四）hive集成solr后能干什么？
 （1）读取solr数据，以hive的支持的SQL语法，能进行各种聚合，统计，分析，join等<br/>
 （2）生成solr索引，一句SQL，就能通过MR的方式给大规模数据构建索引<br/>
 
-###（五）如何安装部署以及使用？
+### （五）如何安装部署以及使用？
 非常简单，使用git clone https://github.com/qindongliang/hive-solr 后，修改少许pom文件后，执行<br/>
 mvn clean package <br/>
 命令构建生成jar包，并将此jar包拷贝至hive的lib目录即可<br/>
@@ -182,16 +182,16 @@ select count(*) from solr;
 
 
 
-###（六）他们还能其他的框架集成么？
+### （六）他们还能其他的框架集成么？
 当然，作为开源独立的框架，我们可以进行各种组合， hive也可以和elasticsearch进行集成，也可以跟mongodb集成，
 solr也可以跟spark集成，也可以跟pig集成,但都需要我们自定义相关的组件才行,思路大致与这个项目的思路一致。
 
-###（七）本次测试通过的基础环境
+### （七）本次测试通过的基础环境
 Apache Hadoop2.7.1<br/>
 Apache Hive1.2.1<br/>
 Apache Solr5.1.0<br/>
 
-###（八）感谢并参考的资料：
+### （八）感谢并参考的资料：
 https://github.com/mongodb/mongo-hadoop/tree/master/hive/src/main/java/com/mongodb/hadoop/hive<br/>
 https://github.com/lucidworks/hive-solr<br/>
 https://github.com/chimpler/hive-solr<br/>
@@ -199,7 +199,9 @@ https://cwiki.apache.org/confluence/display/Hive/DeveloperGuide#DeveloperGuide-H
 
 ## 个人博客
 
-<http://8090nixi.com/>
+（1）[个人站点(2018之后，同步更新）](http://8090nixi.com/) 
+
+（2）[iteye博客](<http://qindongliang.iteye.com/>)  
 
 ## 我的公众号(woshigcs)
 
